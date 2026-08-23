@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loaded Fries - Big Bites Eatery</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(to right, #d32f2f, #ff9800); /* red-orange gradient */
+      color: #fff;
+      text-align: center;
+    }
+    header {
+      padding: 2rem;
+      background: rgba(0,0,0,0.2);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      justify-content: center;
+    }
+    .header-logo {
+      height: 70px;
+      width: 70px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.5);
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+    .cart-link {
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 999px;
+      padding: 0.5rem 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+    #cart-count {
+      background: #fff;
+      color: #d32f2f;
+      border-radius: 50%;
+      width: 1.5rem;
+      height: 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .cart-popup {
+      position: fixed;
+      right: 1.2rem;
+      bottom: 1.2rem;
+      width: min(360px, calc(100vw - 2rem));
+      background: rgba(33, 22, 14, 0.96);
+      color: #fff;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.35);
+      transform: translateY(120%);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 2000;
+      padding: 1rem;
+    }
+    .cart-popup.active {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .cart-popup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .cart-popup-items {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 0.75rem;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+    .cart-popup-item {
+      background: rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 0.7rem 0.8rem;
+      display: grid;
+      gap: 0.5rem;
+    }
+    .cart-popup-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .qty-controls {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255,255,255,0.1);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .qty-btn {
+      border: none;
+      background: transparent;
+      color: #fff;
+      width: 28px;
+      height: 28px;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    .qty-value {
+      min-width: 24px;
+      text-align: center;
+      font-weight: 700;
+    }
+    .cart-popup-summary {
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255,255,255,0.16);
+      display: grid;
+      gap: 0.35rem;
+      font-weight: 600;
+    }
+    .whatsapp-btn {
+      display: block;
+      width: 100%;
+      margin-top: 0.9rem;
+      background: #25d366;
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 0.8rem 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+    }
+    .close-cart {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+    .empty-cart-message {
+      padding: 1rem 0.3rem;
+      color: #ffe0b2;
+      font-weight: 600;
+    }
+    section {
+      padding: 3rem;
+    }
+    h1 {
+      font-family: 'Georgia', serif;
+      font-size: 3rem;
+      margin: 2rem 0 1rem 0;
+    }
+    h2 {
+      font-family: 'Georgia', serif;
+      letter-spacing: 1px;
+      font-size: 2rem;
+    }
+    .product-container {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: rgba(255,255,255,0.1);
+      padding: 2rem;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+    .product-image {
+      width: 100%;
+      max-width: 500px;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      margin: 1rem 0;
+    }
+    .product-description {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin: 1.5rem 0;
+    }
+    footer {
+      padding: 1rem;
+      background: rgba(0,0,0,0.4);
+      font-size: 0.9rem;
+      margin-top: 2rem;
+    }
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .menu-item {
+      position: relative;
+      background: rgba(255,255,255,0.14);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.18);
+      padding: 1.25rem;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .menu-item img {
+      width: 100%;
+      height: 170px;
+      object-fit: cover;
+      border-radius: 12px;
+      display: block;
+      margin: 0 0 1rem;
+    }
+    .menu-item h3,
+    .menu-item p {
+      font-weight: 700;
+    }
+    .menu-item-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.68);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+    }
+    .menu-item-overlay a {
+      background: #ff5722;
+      color: #fff;
+      border-radius: 999px;
+      padding: 0.8rem 1.2rem;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .add-to-cart-btn {
+      background: #ff5722;
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 0.8rem 1.2rem;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    .add-to-cart-btn:hover {
+      background: #e64a19;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="images/logo.jpeg" alt="Big Bites Logo" class="header-logo">
+      <h1>Big Bites Eatery</h1>
+    </div>
+    <nav>
+      <a href="our website.html#menu">Menu</a>
+      <a href="our website.html#about">About</a>
+      <a href="our website.html#contact">Contact</a>
+      <a href="#cart" class="cart-link" id="cart-trigger">Cart <span id="cart-count">0</span></a>
+    </nav>
+  </header>
+
+  <section>
+    <h2>Burgers</h2>
+    <div class="menu-grid">
+      <div class="menu-item">
+        <h3>Single Burger</h3>
+        <h4>R50</h4>
+        <img src="images/single .jpeg" alt="Burger 1">
+        <p>Beef patty, lettuce, tomato, and our special sauce.</p>
+        <button class="add-to-cart-btn" type="button" data-name="Single Burger" data-price="50">Add to Cart</button>
+        <div class="menu-item-overlay">
+        </div>
+      </div>
+      <div class="menu-item">
+        <h3>Double Beef Burger</h3>
+        <h4>R65</h4>
+        <img src="images/double beef.jpeg" alt="Burger 2">
+        <p>All the goodness of the classic, with extra cheese!</p>
+        <button class="add-to-cart-btn" type="button" data-name="Double Beef Burger" data-price="65">Add to Cart</button>
+        <div class="menu-item-overlay">
+        </div>
+      </div>
+      <div class="menu-item">
+        <h3>Single chicken Burger</h3>
+        <h4>R60</h4>
+        <img src="images/burger2.jpeg" alt="Burger 3">
+        <p>A juicy single chicken patty, melted cheese, and fresh toppings, bacon slices can be added for R10.</p>
+        <button class="add-to-cart-btn" type="button" data-name="Single chicken Burger" data-price="60">Add to Cart</button>
+        <div class="menu-item-overlay">
+         </div>
+      </div>
+      <div class="menu-item">
+        <h3>Double chicken Burger</h3>
+        <h4>R70</h4>
+        <img src="images/burger.jpeg" alt="Double chicken burger" class="product-image">
+        <p class="product-description">A juicy double chicken patty, melted cheese, and fresh toppings. A must-try side that's packed with flavor and perfect for sharing moments!</p>
+        <button class="add-to-cart-btn" type="button" data-name="Double chicken Burger" data-price="70">Add to Cart</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 Big Bites Eatery. All rights reserved.</p>
+  </footer>
+
+  <div id="cart-popup" class="cart-popup" aria-live="polite">
+    <div class="cart-popup-header">
+      <h3>Your cart</h3>
+      <button class="close-cart" id="close-cart" type="button" aria-label="Close cart">×</button>
+    </div>
+    <ul id="cart-popup-items" class="cart-popup-items"></ul>
+    <div id="empty-cart-message" class="empty-cart-message">Your cart is empty.</div>
+    <div class="cart-popup-summary">
+      <div>Total: <span id="total-value">R0</span></div>
+    </div>
+    <a id="whatsapp-order" class="whatsapp-btn" href="#" target="_blank" rel="noopener">Order on WhatsApp</a>
+  </div>
+
+  <script>
+    const cartItemsKey = 'bigBitesCartItems';
+    const cartCount = document.getElementById('cart-count');
+    const addButtons = document.querySelectorAll('.add-to-cart-btn');
+    const cartPopup = document.getElementById('cart-popup');
+    const cartPopupItems = document.getElementById('cart-popup-items');
+    const emptyCartMessage = document.getElementById('empty-cart-message');
+    const totalValue = document.getElementById('total-value');
+    const whatsappOrder = document.getElementById('whatsapp-order');
+    const cartTrigger = document.getElementById('cart-trigger');
+    const closeCart = document.getElementById('close-cart');
+
+    function getCartItems() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(cartItemsKey)) || [];
+        return stored.map((item) => {
+          if (typeof item === 'string') {
+            return { name: item, price: 0, qty: 1 };
+          }
+          return { name: item.name, price: Number(item.price) || 0, qty: Number(item.qty) || 1 };
+        });
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveCartItems(items) {
+      localStorage.setItem(cartItemsKey, JSON.stringify(items));
+    }
+
+    function addToCart(name, price) {
+      const cart = getCartItems();
+      const existing = cart.find((item) => item.name === name);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ name, price, qty: 1 });
+      }
+      saveCartItems(cart);
+      renderCart();
+    }
+
+    function updateQuantity(name, change) {
+      const cart = getCartItems();
+      const index = cart.findIndex((item) => item.name === name);
+      if (index === -1) return;
+      cart[index].qty += change;
+      if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+      }
+      saveCartItems(cart);
+      renderCart();
+    }
+
+    function getCartSummary() {
+      const cart = getCartItems();
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const total = subtotal;
+      return { cart, subtotal, total };
+    }
+
+    function renderCart() {
+      const { cart, subtotal, total } = getCartSummary();
+      const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+      cartCount.textContent = totalQty;
+      cartPopupItems.innerHTML = '';
+
+      if (!cart.length) {
+        emptyCartMessage.style.display = 'block';
+        cartPopupItems.style.display = 'none';
+      } else {
+        emptyCartMessage.style.display = 'none';
+        cartPopupItems.style.display = 'grid';
+      }
+
+      cart.forEach((item) => {
+        const li = document.createElement('li');
+        li.className = 'cart-popup-item';
+        li.innerHTML = `
+          <div class="cart-popup-row">
+            <strong>${item.name}</strong>
+            <span>R${(item.price * item.qty)}</span>
+          </div>
+          <div class="cart-popup-row">
+            <div class="qty-controls">
+              <button class="qty-btn" type="button" data-action="decrease" data-name="${item.name}">−</button>
+              <span class="qty-value">${item.qty}</span>
+              <button class="qty-btn" type="button" data-action="increase" data-name="${item.name}">+</button>
+            </div>
+            <button class="remove-item" type="button" data-name="${item.name}" style="background:transparent;border:none;color:#fff;cursor:pointer;">Remove</button>
+          </div>
+        `;
+        cartPopupItems.appendChild(li);
+      });
+
+      totalValue.textContent = `R${total}`;
+
+      const orderText = cart.length
+        ? encodeURIComponent(`Hello Big Bites Eatery, I'd like to order:\n${cart.map((item) => `${item.name} x${item.qty}`).join('\n')}\nTotal: R${total}`)
+        : encodeURIComponent('Hello Big Bites Eatery, I would like to place an order.');
+      whatsappOrder.href = `https://wa.me/0677808527?text=${orderText}`;
+    }
+
+    addButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        addToCart(button.dataset.name, Number(button.dataset.price));
+        cartPopup.classList.add('active');
+      });
+    });
+
+    cartPopupItems.addEventListener('click', (event) => {
+      const target = event.target.closest('button');
+      if (!target) return;
+      const { action, name } = target.dataset;
+      if (action === 'increase') updateQuantity(name, 1);
+      if (action === 'decrease') updateQuantity(name, -1);
+      if (target.classList.contains('remove-item')) updateQuantity(name, -9999);
+    });
+
+    cartTrigger.addEventListener('click', (event) => {
+      event.preventDefault();
+      cartPopup.classList.toggle('active');
+      renderCart();
+    });
+
+    closeCart.addEventListener('click', () => cartPopup.classList.remove('active'));
+    renderCart();
+  </script>
+</body>
+</html>

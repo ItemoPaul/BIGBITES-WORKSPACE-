@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - Big Bites Eatery</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(to right, #d32f2f, #ff9800);
+      color: #fff;
+      text-align: center;
+    }
+    header {
+      padding: 2rem;
+      background: rgba(0,0,0,0.2);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      justify-content: center;
+    }
+    .header-logo {
+      height: 70px;
+      width: 70px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.5);
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+    nav a:hover {
+      color: #ffd54f;
+    }
+    .cart-link {
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 999px;
+      padding: 0.5rem 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+    #cart-count {
+      background: #fff;
+      color: #d32f2f;
+      border-radius: 50%;
+      width: 1.5rem;
+      height: 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    section {
+      padding: 3rem 1.5rem;
+    }
+    .checkout-card {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 18px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+    }
+    h1, h2 {
+      font-family: 'Georgia', serif;
+      letter-spacing: 1px;
+    }
+    .cart-items {
+      list-style: none;
+      padding: 0;
+      margin: 1.5rem 0;
+      display: grid;
+      gap: 0.75rem;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.15);
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      color: #fff;
+      font-weight: 600;
+    }
+    .cart-item small {
+      color: #ffe0b2;
+      font-weight: 700;
+    }
+    .summary-box {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.3);
+      display: grid;
+      gap: 0.45rem;
+      text-align: left;
+      font-weight: 600;
+    }
+    .summary-box strong {
+      font-size: 1.2rem;
+    }
+    .checkout-btn, .clear-btn, .whatsapp-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 0.9rem 1.4rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      margin-top: 1rem;
+    }
+    .checkout-btn {
+      background: #ff5722;
+      color: #fff;
+      margin-right: 0.75rem;
+    }
+    .clear-btn {
+      background: rgba(255,255,255,0.16);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .whatsapp-btn {
+      background: #25d366;
+      color: #fff;
+      margin-left: 0.75rem;
+    }
+    .checkout-btn:hover, .clear-btn:hover, .whatsapp-btn:hover {
+      transform: translateY(-1px);
+    }
+    .empty-cart {
+      color: #ffe0b2;
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 2rem 1rem;
+    }
+    footer {
+      padding: 1rem;
+      background: rgba(0,0,0,0.4);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="images/logo.jpeg" alt="Big Bites Logo" class="header-logo">
+      <h1>Big Bites Eatery</h1>
+    </div>
+    <nav>
+      <a href="our website.html">Home</a>
+      <a href="our website.html#menu">Menu</a>
+      <a href="our website.html#about">About</a>
+      <a href="our website.html#contact">Contact</a>
+      <a href="#" class="cart-link" id="cart-trigger">Cart <span id="cart-count">0</span></a>
+    </nav>
+  </header>
+
+  <section>
+    <div class="checkout-card">
+      <h1>Checkout</h1>
+      <h2>Your Order</h2>
+      <ul id="cart-items" class="cart-items"></ul>
+      <div id="empty-cart" class="empty-cart">Your cart is empty.</div>
+
+      <div class="summary-box">
+        <div><strong>Total: <span id="total-value">R0</span></strong></div>
+      </div>
+
+      <button class="checkout-btn" type="button" id="place-order">Place Order</button>
+      <button class="clear-btn" type="button" id="clear-cart">Clear Cart</button>
+      <a id="whatsapp-order" class="whatsapp-btn" href="#" target="_blank" rel="noopener">WhatsApp Order</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 Big Bites Eatery. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const cartItemsKey = 'bigBitesCartItems';
+    const cartList = document.getElementById('cart-items');
+    const emptyCart = document.getElementById('empty-cart');
+    const totalDisplay = document.getElementById('total-value');
+    const cartCount = document.getElementById('cart-count');
+    const whatsappLink = document.getElementById('whatsapp-order');
+    const placeOrderBtn = document.getElementById('place-order');
+    const clearCartBtn = document.getElementById('clear-cart');
+
+    function getCartItems() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(cartItemsKey)) || [];
+        return stored.map((item) => {
+          if (typeof item === 'string') {
+            return { name: item, price: 0, qty: 1 };
+          }
+          return { name: item.name, price: Number(item.price) || 0, qty: Number(item.qty) || 1 };
+        });
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function updateCartDisplay() {
+      const items = getCartItems();
+      const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+      cartList.innerHTML = '';
+      cartCount.textContent = items.reduce((sum, item) => sum + item.qty, 0);
+
+      if (!items.length) {
+        emptyCart.style.display = 'block';
+        totalDisplay.textContent = 'R0';
+        whatsappLink.href = 'https://wa.me/0677808527?text=' + encodeURIComponent('Hello Big Bites Eatery, I would like to place an order.');
+        return;
+      }
+
+      emptyCart.style.display = 'none';
+      items.forEach((item) => {
+        const li = document.createElement('li');
+        li.className = 'cart-item';
+        li.innerHTML = `<span>${item.name} <small>x${item.qty}</small></span><span>R${item.price * item.qty}</span>`;
+        cartList.appendChild(li);
+      });
+
+      totalDisplay.textContent = `R${total}`;
+
+      const orderText = encodeURIComponent(`Hello Big Bites Eatery, I'd like to order:\n${items.map((item) => `${item.name} x${item.qty}`).join('\n')}\nTotal: R${total}`);
+      whatsappLink.href = `https://wa.me/0677808527?text=${orderText}`;
+    }
+
+    clearCartBtn.addEventListener('click', () => {
+      localStorage.removeItem(cartItemsKey);
+      updateCartDisplay();
+    });
+
+    placeOrderBtn.addEventListener('click', () => {
+      const items = getCartItems();
+      if (!items.length) {
+        alert('Your cart is empty. Add items before placing an order.');
+        return;
+      }
+      window.location.href = whatsappLink.href;
+    });
+
+    updateCartDisplay();
+  </script>
+</body>
+</html>
