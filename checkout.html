@@ -125,7 +125,22 @@
     .summary-box strong {
       font-size: 1.2rem;
     }
-    .checkout-btn, .clear-btn, .whatsapp-btn {
+    .payment-note {
+      margin: 0.5rem 0 0;
+      color: #ffe0b2;
+      font-size: 0.9rem;
+    }
+    .bank-transfer-details {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.15);
+      text-align: left;
+    }
+    .bank-transfer-details p {
+      margin: 0.45rem 0;
+    }
+    .checkout-btn, .clear-btn, .whatsapp-btn, .transfer-btn {
       border: none;
       border-radius: 999px;
       padding: 0.9rem 1.4rem;
@@ -152,7 +167,13 @@
       color: #fff;
       margin-left: 0.75rem;
     }
-    .checkout-btn:hover, .clear-btn:hover, .whatsapp-btn:hover {
+    .transfer-btn {
+      display: block;
+      margin: 1rem auto 0;
+      background: #ffd54f;
+      color: #4e342e;
+    }
+    .checkout-btn:hover, .clear-btn:hover, .whatsapp-btn:hover, .transfer-btn:hover {
       transform: translateY(-1px);
     }
     .empty-cart {
@@ -194,9 +215,19 @@
         <div><strong>Total: <span id="total-value">R0</span></strong></div>
       </div>
 
-      <button class="checkout-btn" type="button" id="place-order">Place Order</button>
+      <button class="checkout-btn" type="button" id="place-order">Place Order on WhatsApp</button>
       <button class="clear-btn" type="button" id="clear-cart">Clear Cart</button>
       <a id="whatsapp-order" class="whatsapp-btn" href="#" target="_blank" rel="noopener">WhatsApp Order</a>
+      <button class="transfer-btn" type="button" id="toggle-transfer-details" aria-expanded="false" aria-controls="bank-transfer-details">Pay with Transfer</button>
+      <div id="bank-transfer-details" class="bank-transfer-details" hidden>
+        <strong>Bank transfer details</strong>
+        <p>Bank: Capitec</p>
+        <p>Account name: Neo Mpete / Big Bites Eatery</p>
+        <p>Account number: 2520181008</p>
+        <p>Contact: 0692898306</p>
+        <p>Payment reference: <span id="transfer-reference"></span></p>
+        <p class="payment-note">After making the transfer, send your order confirmation on WhatsApp.</p>
+      </div>
     </div>
   </section>
 
@@ -213,6 +244,9 @@
     const whatsappLink = document.getElementById('whatsapp-order');
     const placeOrderBtn = document.getElementById('place-order');
     const clearCartBtn = document.getElementById('clear-cart');
+    const bankTransferDetails = document.getElementById('bank-transfer-details');
+    const toggleTransferDetailsBtn = document.getElementById('toggle-transfer-details');
+    const transferReference = document.getElementById('transfer-reference');
 
     function getCartItems() {
       try {
@@ -231,6 +265,7 @@
     function updateCartDisplay() {
       const items = getCartItems();
       const total = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      const paymentMethod = bankTransferDetails.hidden ? 'WhatsApp' : 'Bank transfer';
 
       cartList.innerHTML = '';
       cartCount.textContent = items.reduce((sum, item) => sum + item.qty, 0);
@@ -238,7 +273,9 @@
       if (!items.length) {
         emptyCart.style.display = 'block';
         totalDisplay.textContent = 'R0';
-        whatsappLink.href = 'https://wa.me/0677808527?text=' + encodeURIComponent('Hello Big Bites Eatery, I would like to place an order.');
+        transferReference.textContent = 'Order and total amount';
+        const orderText = `Hello Big Bites Eatery, I would like to place an order.\nPayment method: ${paymentMethod}`;
+        whatsappLink.href = `https://wa.me/+27677808527?text=${encodeURIComponent(orderText)}`;
         return;
       }
 
@@ -251,9 +288,10 @@
       });
 
       totalDisplay.textContent = `R${total}`;
+      transferReference.textContent = `${items.map((item) => `${item.name} x${item.qty}`).join(', ')} - R${total}`;
 
-      const orderText = encodeURIComponent(`Hello Big Bites Eatery, I'd like to order:\n${items.map((item) => `${item.name} x${item.qty}`).join('\n')}\nTotal: R${total}`);
-      whatsappLink.href = `https://wa.me/0677808527?text=${orderText}`;
+      const orderText = encodeURIComponent(`Hello Big Bites Eatery, I'd like to order:\n${items.map((item) => `${item.name} x${item.qty}`).join('\n')}\nTotal: R${total}\nPayment method: ${paymentMethod}`);
+      whatsappLink.href = `https://wa.me/+27677808527?text=${orderText}`;
     }
 
     clearCartBtn.addEventListener('click', () => {
@@ -268,6 +306,13 @@
         return;
       }
       window.location.href = whatsappLink.href;
+    });
+
+    toggleTransferDetailsBtn.addEventListener('click', () => {
+      bankTransferDetails.hidden = !bankTransferDetails.hidden;
+      toggleTransferDetailsBtn.setAttribute('aria-expanded', String(!bankTransferDetails.hidden));
+      toggleTransferDetailsBtn.textContent = bankTransferDetails.hidden ? 'Pay with Transfer' : 'Hide Transfer Details';
+      updateCartDisplay();
     });
 
     updateCartDisplay();

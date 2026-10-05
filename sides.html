@@ -286,7 +286,7 @@
     <div class="cart-popup-summary">
       <div>Total: <span id="total-value">R0</span></div>
     </div>
-    <a id="whatsapp-order" class="whatsapp-btn" href="#" target="_blank" rel="noopener">Order on WhatsApp</a>
+    <a id="whatsapp-order" class="whatsapp-btn" href="checkout.html" rel="noopener">Proceed to Checkout</a>
   </div>
 
   <script>
@@ -297,7 +297,6 @@
     const cartPopupItems = document.getElementById('cart-popup-items');
     const emptyCartMessage = document.getElementById('empty-cart-message');
     const totalValue = document.getElementById('total-value');
-    const whatsappOrder = document.getElementById('whatsapp-order');
     const cartTrigger = document.getElementById('cart-trigger');
     const closeCart = document.getElementById('close-cart');
 
@@ -386,10 +385,6 @@
 
       totalValue.textContent = `R${total}`;
 
-      const orderText = cart.length
-        ? encodeURIComponent(`Hello Big Bites Eatery, I'd like to order:\n${cart.map((item) => `${item.name} x${item.qty}`).join('\n')}\nTotal: R${total}`)
-        : encodeURIComponent('Hello Big Bites Eatery, I would like to place an order.');
-      whatsappOrder.href = `https://wa.me/0677808527?text=${orderText}`;
     }
 
     addButtons.forEach((button) => {
